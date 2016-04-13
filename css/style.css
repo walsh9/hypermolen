@@ -1,7 +1,7 @@
 #canvas {
   display: block;
-  width: 128px;
-  height: 128px;
+  width: 512px;
+  height: 512px;
   margin: auto;
   image-rendering: optimizeSpeed;
   image-rendering: -moz-crisp-edges;
