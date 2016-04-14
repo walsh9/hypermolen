@@ -1,6 +1,6 @@
 Game.stages = [{
     molen: {
-      arms: 4,
+      armCount: 4,
       armWidth: 0.125,
       towerColor: "#D2B48C",
       capColor: "#996633",
@@ -15,7 +15,7 @@ Game.stages = [{
     greenColor: "#007700",
   }, {
     molen: {
-      arms: 4,
+      armCount: 4,
       armWidth: 0.125,
       towerColor: "#bb6633",
       capColor: "#aa3300",
@@ -31,7 +31,7 @@ Game.stages = [{
     bgEffect: "plasma",
   }, {
     molen: {
-      arms: 4,
+      armCount: 4,
       armWidth: 0.125,
       towerColor: "#bbbbbb",
       capColor: "#999999",
