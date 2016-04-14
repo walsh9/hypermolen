@@ -1,42 +1,6 @@
-var Vector2d = {
-  init: function(pos) {
-    this.x = pos.x;
-    this.y = pos.y;
-    return this;
-  },
-  new: function(pos) {
-    return Object.create(Vector2d).init(pos);
-  },
-  distanceTo(pos) {
-    var deltaX = pos.x - this.x;
-    var deltaY = pos.y - this.y;
-    return Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-  },
-  directionTo: function(pos) {
-    var deltaX = pos.x - this.x;
-    var deltaY = pos.y - this.y;
-    var distance = this.distanceTo(pos)
-    var dirX = deltaX / distance;
-    var dirY = deltaY / distance;
-    return Vector2d.new({x: dirX , y: dirY});
-  },
-  move: function(direction, speed) {
-    this.x += direction.x * speed;
-    this.y += direction.y * speed;
-  },
-  moveTowards: function(pos, speed) {
-    var direction = this.directionTo(pos);
-    this.x += direction.x * speed;
-    this.y += direction.y * speed;
-  },
-  isNear: function(pos) {
-    return(this.distanceTo(pos) < 1)
-  }
-}
-
-Math.mod = function(x, y) {
-  return ((x % y) + y) % y;
-}
+Game.isPaused = false;
+Game.gameOver = false;
+Game.activeScreen = "game";
 
 var HyperMolen = function(canvas) {
   var CIRCLE = Math.PI * 2;
@@ -46,107 +10,12 @@ var HyperMolen = function(canvas) {
   var MID_Y = H / 2;
   var ctx = canvas.getContext("2d");
   var keysDown = {};
-  var gameOver = false;
-  var isPaused = false;
   var greenLeft  = MID_X + 10;
   var greenRight = MID_X - 10;
-  var molen = {};
-
-  var Game = {};
 
   Game.init = function() {
-
+    ctx.imageSmoothingEnabled = false;
   }
-
-  var stage = {};
-
-  Game.initStage = function(level) {
-    var options = Game.levels[level];
-    molen.armCount   = options.molen.arms;
-    molen.armWidth   = options.molen.armWidth;
-    molen.arms = createArms(molen.armCount, molen.armWidth);
-    molen.towerColor = options.molen.towerColor;
-    molen.capColor   = options.molen.capColor;
-    molen.wheelColor = options.molen.wheelColor;
-    molen.armColor   = options.molen.armColor;
-    molen.frameColor = options.molen.frameColor;
-    molen.sailColor  = options.molen.sailColor;
-    stage.terrain    = options.stage.terrain;
-    stage.skyColor   = options.stage.skyColor;
-    stage.landColor  = options.stage.landColor;
-    stage.greenColor = options.stage.greenColor;
-
-    molen.angle = 0;
-    if (stage.terrain === "land") {
-      molen.pos = {x: MID_X, y:10};
-      molen.armRadius = 20;
-      stage.targetCount = 1;
-    } else if (stage.terrain === "mirror") {
-      molen.pos = {x: MID_X, y: MID_Y};
-      molen.armRadius = 15;      
-       stage.targetCount = 2;
-   } else if (stage.terrain === "space") {
-      molen.pos = {x: MID_X, y: MID_Y};
-      molen.armRadius = 15;      
-      stage.targetCount = 4;
-    }
-  }
-
-  var grd=ctx.createLinearGradient(0, 0, 0, 64);
-  grd.addColorStop(0,"#000000");
-  grd.addColorStop(1,"#ff88ff");
-  ctx.fillStyle = grd;  
-
-  Game.levels = [{
-    molen: {
-      arms: 4,
-      armWidth: 0.125,
-      towerColor: "#D2B48C",
-      capColor: "#996633",
-      wheelColor: "#ffffff",
-      armColor: "#ff6600",
-      frameColor: "#ff6600",
-      sailColor: "#ffffff"
-    },
-    stage: {
-      terrain: "land",
-      skyColor: grd,
-      landColor: "#000000",
-      greenColor: "#007700"
-    }
-  }, {
-    molen: {
-      arms: 4,
-      armWidth: 0.125,
-      towerColor: "#bb6633",
-      capColor: "#aa3300",
-      wheelColor: "#ffffff",
-      armColor: "#ff6600",
-      frameColor: "#0066ff",
-      sailColor: "#ffffff"
-    },
-    stage: {
-      terrain: "mirror",
-      skyColor: grd,
-      landColor: "#000000",
-      greenColor: "#000077"
-    }
-  }, {
-    molen: {
-      arms: 4,
-      armWidth: 0.125,
-      towerColor: "#bbbbbb",
-      capColor: "#999999",
-      wheelColor: "#ffffff",
-      armColor: "#dddddd",
-      frameColor: "#dddddd",
-      sailColor: "#0000ff"
-    },
-    stage: {
-      terrain: "space",
-      skyColor: "#000033",
-    }
-  }];
 
   var createArms = function(numArms, width) {
     var start, end;
@@ -159,27 +28,77 @@ var HyperMolen = function(canvas) {
     return arms;
   };
 
-  molen.angle = 0;//CIRCLE / 4 - CIRCLE * 0.125;
-  molen.pos = {x: MID_X, y:10};
-  molen.armRadius = 20;
-  molen.armCount = 4;
-  molen.armWidth = 0.125;
-  molen.arms = createArms(molen.armCount, molen.armWidth);
-  molen.heartRadius = 4;
+  var Stage = {};
+
+  Game.initStage = function(stage) {
+    var options = Game.stages[stage];
+    Stage.terrain    = options.terrain;
+    Stage.skyColor   = options.skyColor;
+    Stage.landColor  = options.landColor;
+    Stage.greenColor = options.greenColor;
+
+    if (options.bgEffect) {
+      Stage.bgEffect = Object.create(Game.bgEffects[options.bgEffect]).init(ctx);
+    }
+
+    Stage.molen = {};
+    Stage.molen.armCount   = options.molen.arms;
+    Stage.molen.armWidth   = options.molen.armWidth;
+    Stage.molen.arms = createArms(Stage.molen.armCount, Stage.molen.armWidth);
+    Stage.molen.towerColor = options.molen.towerColor;
+    Stage.molen.capColor   = options.molen.capColor;
+    Stage.molen.wheelColor = options.molen.wheelColor;
+    Stage.molen.armColor   = options.molen.armColor;
+    Stage.molen.frameColor = options.molen.frameColor;
+    Stage.molen.sailColor  = options.molen.sailColor;
+
+    Stage.molen.angle = 0;
+    if (Stage.terrain === "land") {
+      Stage.molen.pos = {x: MID_X, y:10};
+      Stage.molen.armRadius = 20;
+      Stage.targetCount = 1;
+    } else if (Stage.terrain === "mirror") {
+      Stage.molen.pos = {x: MID_X, y: MID_Y};
+      Stage.molen.armRadius = 15;      
+       Stage.targetCount = 2;
+    } else if (Stage.terrain === "space") {
+      Stage.molen.pos = {x: MID_X, y: MID_Y};
+      Stage.molen.armRadius = 15;      
+      Stage.targetCount = 4;
+    }
+    Stage.molen.heartRadius = 4;
+    switch (Stage.targetCount) {
+    case 1: 
+      Stage.targets = [{x: 32, y: 33}];
+      break;
+    case 2:
+      Stage.targets = 
+        [{x: Stage.molen.pos.x, y: Stage.molen.pos.y + Stage.molen.armRadius}, 
+         {x: Stage.molen.pos.x, y: Stage.molen.pos.y - Stage.molen.armRadius}];
+      break;
+    case 4:
+      Stage.targets = 
+        [{x: Stage.molen.pos.x, y: Stage.molen.pos.y + Stage.molen.armRadius}, 
+         {x: Stage.molen.pos.x, y: Stage.molen.pos.y - Stage.molen.armRadius},
+         {x: Stage.molen.pos.x + Stage.molen.armRadius, y: Stage.molen.pos.y},
+         {x: Stage.molen.pos.x - Stage.molen.armRadius, y: Stage.molen.pos.y}];
+      break;
+    }
+  }
 
 
   var Ball = {
     init: function(collection) {
-      this.target = this._getTargets(stage.targetCount)[Math.floor(Math.random() * stage.targetCount)];
-      this.color = randomColor();
+      this.target = Stage.targets.random();
+      this.color = colors.random();
       this.radius = 2;
       this.bounced = false;
       var x;
       var y;
-      if (this.target.x !== molen.pos.x) {
+      if (this.target.x !== Stage.molen.pos.x) {
         this.tendency = "horizontal";
         y = Math.random() * H;
-        if (this.target.x > molen.pos.x) {
+        if (this.target.x > Stage.molen.pos.x) {
           x = H;
         }
         else {
@@ -188,7 +107,7 @@ var HyperMolen = function(canvas) {
       } else {
         this.tendency = "vertical";
         x = Math.random() * W;
-        if (this.target.y > molen.pos.y) {
+        if (this.target.y > Stage.molen.pos.y) {
           y = H;
         }
         else {
@@ -224,36 +143,19 @@ var HyperMolen = function(canvas) {
     destroy: function() {
         delete this.collection[this.index];
     },
-    _getTargets: function(n) {
-      switch (n) {
-        case 1: 
-          return [{x: 32, y: 33}];
-        case 2:
-          return [{x: molen.pos.x, y: molen.pos.y + molen.armRadius}, 
-                  {x: molen.pos.x, y: molen.pos.y - molen.armRadius}];
-        case 4:
-          return [{x: molen.pos.x, y: molen.pos.y + molen.armRadius}, 
-                  {x: molen.pos.x, y: molen.pos.y - molen.armRadius},
-                  {x: molen.pos.x + molen.armRadius, y: molen.pos.y},
-                  {x: molen.pos.x - molen.armRadius, y: molen.pos.y}];
-      }
-    }
   };
 
   var windSpeed = -3;
   var balls = [];
 
-  var randomColor = function() {
-    var colors = ["#00ffff","#ffff00","#ff9999","#ff3333","#ff00ff","#00ff00"];
-    return colors[Math.floor(Math.random() * colors.length)]
-  };
+  var colors = ["#00ffff","#ffff00","#ff9999","#ff3333","#ff00ff","#00ff00"];
 
   var checkBlocking = function(offset) {
     var armStart, armEnd
     offset = offset || CIRCLE * 0.25;
-    return molen.arms.some(function(arm) {
-      armStart = Math.mod(arm.start * CIRCLE + molen.angle, CIRCLE);
-      armEnd =   Math.mod(arm.end   * CIRCLE + molen.angle, CIRCLE);
+    return Stage.molen.arms.some(function(arm) {
+      armStart = Math.mod(arm.start * CIRCLE + Stage.molen.angle, CIRCLE);
+      armEnd =   Math.mod(arm.end   * CIRCLE + Stage.molen.angle, CIRCLE);
       if (offset > armStart && offset < armEnd || 
         offset > armStart && armEnd < armStart || 
         offset < armStart && armEnd < armStart) {
@@ -277,12 +179,12 @@ var HyperMolen = function(canvas) {
 
   var update = function(timePassed) {
     var delta = timePassed * 2;
-    molen.angle = Math.mod(molen.angle + windSpeed * timePassed, CIRCLE);
+    Stage.molen.angle = Math.mod(Stage.molen.angle + windSpeed * timePassed, CIRCLE);
     if (39 in keysDown) { // right
-      molen.angle = Math.mod(molen.angle - delta, CIRCLE);
+      Stage.molen.angle = Math.mod(Stage.molen.angle - delta, CIRCLE);
     }
     if (37 in keysDown) { // left
-      molen.angle = Math.mod(molen.angle + delta, CIRCLE);
+      Stage.molen.angle = Math.mod(Stage.molen.angle + delta, CIRCLE);
     }
     if (38 in keysDown) { // up
       delete keysDown[38];
@@ -291,6 +193,9 @@ var HyperMolen = function(canvas) {
     balls.forEach(function(ball) {
       ball.update(timePassed);
     });
+    if (Stage.bgEffect) {
+      Stage.bgEffect.update(timePassed);
+    }
   };
 
   var drawPieSlice = function(ctx, x, y, radius, startAngle, endAngle) {
@@ -304,7 +209,7 @@ var HyperMolen = function(canvas) {
     ctx.restore();
   };
 
-  var drawSky = function(ctx) {
+  var drawSky = function(ctx, stage, molen) {
     ctx.fillStyle = stage.skyColor;
     if (stage.terrain === "land") {
       ctx.fillRect(0, 0, W, 35);
@@ -313,7 +218,7 @@ var HyperMolen = function(canvas) {
     }
   }
 
-  var drawTower = function(ctx) {
+  var drawTower = function(ctx, stage, molen) {
     if (stage.terrain === "land") {
       //draw body
       ctx.beginPath();
@@ -346,10 +251,10 @@ var HyperMolen = function(canvas) {
       //draw portal
       ctx.beginPath();
       ctx.fillStyle = "#000000";
-      ctx.arc(molen.pos.x, molen.pos.y + molen.armRadius, molen.heartRadius, CIRCLE, 0);
+      ctx.arc(molen.pos.x, molen.pos.y + molen.armRadius, molen.heartRadius, CIRCLE/2, 0);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(molen.pos.x, molen.pos.y - molen.armRadius, molen.heartRadius, CIRCLE, 0);
+      ctx.arc(molen.pos.x, molen.pos.y - molen.armRadius, molen.heartRadius, 0, CIRCLE/2);
       ctx.fill();
 
     } else if (stage.terrain === "space") {
@@ -380,7 +285,7 @@ var HyperMolen = function(canvas) {
     }
   }
 
-  var drawGreen = function(ctx) {
+  var drawGreen = function(ctx, stage, molen) {
     if (stage.terrain === "land") {
       ctx.beginPath();
       ctx.fillStyle = stage.greenColor;
@@ -409,7 +314,7 @@ var HyperMolen = function(canvas) {
     }
   }
 
-  var drawWheel = function(ctx) {
+  var drawWheel = function(ctx, stage, molen) {
     //draw heart
     ctx.beginPath();
     ctx.fillStyle = molen.wheelColor;
@@ -465,23 +370,27 @@ var HyperMolen = function(canvas) {
   }
 
 
-  var draw = function() {
-
+  var draw = function(stage) {
+    var molen = stage.molen
     //clear screen
     ctx.fillStyle = "#000000";
     ctx.fillRect(0, 0, W, H);
 
     //draw sky
-    drawSky(ctx);
+    if (stage.bgEffect) {
+      stage.bgEffect.draw(molen.angle);
+    } else {
+      drawSky(ctx, stage, molen);
+    }
 
     //draw tower
-    drawTower(ctx);
+    drawTower(ctx, stage, molen);
 
     //draw green
-    drawGreen(ctx);
+    drawGreen(ctx, stage, molen);
     
     // draw windwheel
-    drawWheel(ctx);
+    drawWheel(ctx, stage, molen);
 
     //draw balls
     balls.forEach(function(ball) {
@@ -490,8 +399,6 @@ var HyperMolen = function(canvas) {
       ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, CIRCLE);
       ctx.fill();
     });
-
-
   };
 
   var runTime, timeStep, currentTime
@@ -510,8 +417,8 @@ var HyperMolen = function(canvas) {
               frameTime -= delta;
               runTime += delta;
           }
-      draw();
-      if (!gameOver && !isPaused) {
+      draw(Stage);
+      if (!Game.gameOver && !Game.isPaused) {
           requestAnimationFrame(mainLoop, canvas);
       }
       else {
@@ -524,11 +431,11 @@ var HyperMolen = function(canvas) {
       }
   };
 
-  window.addEventListener('blur', function() {isPaused = true;})
-  window.addEventListener('focus', function() {isPaused = false; initLoop(); mainLoop();})
+  window.addEventListener('blur', function() {Game.isPaused = true;})
+  window.addEventListener('focus', function() {Game.isPaused = false; initLoop(); mainLoop();})
 
   Game.init();
-  Game.initStage(0);
+  Game.initStage(2);
   initLoop();
   mainLoop();
 }(document.querySelector('#canvas'));
