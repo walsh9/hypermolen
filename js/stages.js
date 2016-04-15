@@ -48,7 +48,7 @@ Game.stages = [{
     landColor: "#000000",
     greenColor: "rgba(0,100,0,0.8)",
     bgEffect: "gradient",
-    bgOptions: {from: "red", to: "black", spin: true, reflect: true}
+    bgOptions: {from: "red", to: "black", spin: true, reflect: false}
   }, {
     molen: {
       armCount: 4,

@@ -20,8 +20,9 @@ Game.bgEffects.gradient = {
     
   },
   draw: function(angle) {
+    angle = angle;
     if (this.options.spin) {
-      var gradient = this.ctx.createLinearGradient(-64 * Math.cos(angle), -64 * Math.sin(angle), 64 * Math.cos(angle), 64 * Math.sin(angle));
+      var gradient = this.ctx.createLinearGradient(-32 * Math.cos(angle) + 32, -32 * Math.sin(angle) + 32, 32 * Math.cos(angle) + 32, 32 * Math.sin(angle) + 32);
       gradient.addColorStop(0, this.options.from || "black");
       if (this.options.reflect) {
         gradient.addColorStop(0.5, this.options.to   || "white");
