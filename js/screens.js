@@ -12,7 +12,7 @@ Game.screens.main = {
     this.stage.landColor  = options.landColor;
     this.stage.greenColor = options.greenColor;
     if (options.bgEffect) {
-      this.stage.bgEffect = Object.create(Game.bgEffects[options.bgEffect]).init(ctx);
+      this.stage.bgEffect = Object.create(Game.bgEffects[options.bgEffect]).init(ctx, options.bgOptions);
     }
     options.molen.terrain = this.stage.terrain;
     options.molen.targetCount = this.stage.targetCount;

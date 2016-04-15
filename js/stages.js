@@ -29,6 +29,7 @@ Game.stages = [{
     landColor: "#000000",
     greenColor: "rgba(0,0,100,0.8)",
     bgEffect: "plasma",
+    bgOptions: {s: 60, rx: 2, gx: 5, bx: 6}
   }, {
     molen: {
       armCount: 4,
@@ -43,17 +44,5 @@ Game.stages = [{
     terrain: "space",
     skyColor: "#000033",
     bgEffect: "starfield",
-  }, {
-    molen: {
-      armCount: 3,
-      armWidth: 0.11,
-      towerColor: "#bbbbbb",
-      capColor: "#999999",
-      wheelColor: "#ffffff",
-      armColor: "#dddddd",
-      frameColor: "#dddddd",
-      sailColor: "#0000ff"
-    },
-    terrain: "space",
-    skyColor: "#000033",
+    bgOptions: {starCount: 50}
   }];

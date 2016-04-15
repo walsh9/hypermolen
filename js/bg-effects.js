@@ -1,17 +1,18 @@
 Game.bgEffects = {};
 
 Game.bgEffects.plasma = {
-  init: function(ctx) {
+  init: function(ctx, options) {
     this.ctx = ctx;
+    options = options || {};
     this.w = ctx.canvas.width;
     this.h = ctx.canvas.height;
-    this.s = Math.floor(Math.random() * 120 + 8);
+    this.s = options.s || Math.floor(Math.random() * 120 + 8);
     this.paletteOffset = 0;
     this.imgData = ctx.createImageData(this.w, this.h);
     this.palette = [];
-    var rx = Math.pow(2, Math.floor(Math.random() * 6 + 3)); //factors of 256 will loop nice
-    var gx = Math.pow(2, Math.floor(Math.random() * 6 + 3));
-    var bx = Math.pow(2, Math.floor(Math.random() * 6 + 3));
+    var rx = Math.pow(2, options.rx || Math.floor(Math.random() * 6 + 3)); //factors of 256 will loop nice
+    var gx = Math.pow(2, options.gx || Math.floor(Math.random() * 6 + 3));
+    var bx = Math.pow(2, options.bx || Math.floor(Math.random() * 6 + 3));
 
     var i, r, g, b;
     for (i = 0; i < 256; i++) {
@@ -58,8 +59,9 @@ Game.bgEffects.plasma = {
 }
 
 Game.bgEffects.starfield = {
-  init: function(ctx) {
+  init: function(ctx, options) {
     this.ctx = ctx;
+    options = options || {};
     this.stars = [];
     this.w = ctx.canvas.width;
     this.h = ctx.canvas.height;
@@ -67,7 +69,7 @@ Game.bgEffects.starfield = {
       x: this.w / 2,
       y: this.h / 2
     });
-    var starCount = 50;
+    var starCount = options.starCount || 50;
     var star;
     for(var n = 0; n < starCount; n++) {
       star = {
