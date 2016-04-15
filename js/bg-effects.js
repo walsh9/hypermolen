@@ -1,5 +1,43 @@
 Game.bgEffects = {};
 
+Game.bgEffects.gradient = {
+  init: function(ctx, options) {
+    this.ctx = ctx;
+    this.options = options = options || {};
+    this.w = ctx.canvas.width;
+    this.h = ctx.canvas.height;
+    this.gradient = ctx.createLinearGradient(0, 0, 0, this.h);
+    this.gradient.addColorStop(0, this.options.from || "black");
+    if (this.options.reflect) {
+      this.gradient.addColorStop(0.5, this.options.to   || "white");
+      this.gradient.addColorStop(1, this.options.from   || "black");
+    } else {
+      this.gradient.addColorStop(1, this.options.to   || "white");
+    }
+    return this;
+  },
+  update: function(delta) {
+    
+  },
+  draw: function(angle) {
+    if (this.options.spin) {
+      var gradient = this.ctx.createLinearGradient(-64 * Math.cos(angle), -64 * Math.sin(angle), 64 * Math.cos(angle), 64 * Math.sin(angle));
+      gradient.addColorStop(0, this.options.from || "black");
+      if (this.options.reflect) {
+        gradient.addColorStop(0.5, this.options.to   || "white");
+        gradient.addColorStop(1, this.options.from   || "black");
+      } else {
+        gradient.addColorStop(1, this.options.to   || "white");
+      }
+      this.ctx.fillStyle = gradient;
+      this.ctx.fillRect(0,0,this.w,this.h);
+    } else {
+      this.ctx.fillStyle = this.gradient;
+      this.ctx.fillRect(0,0,this.w,this.h);
+    }
+  }
+}
+
 Game.bgEffects.plasma = {
   init: function(ctx, options) {
     this.ctx = ctx;
@@ -29,7 +67,7 @@ Game.bgEffects.plasma = {
     var step = ((delta * 60) / 1000) * speed;
     this.paletteOffset += step;
   },
-  draw: function(angles) {
+  draw: function(angle) {
     var x, y, c;
     var plasmas = [
     function (x, y, s) {

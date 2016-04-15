@@ -6,7 +6,7 @@ var HyperMolen = function(canvas) {
     Game.isPaused = false;
     Game.gameOver = false;
     Game.activeScreen = "main";
-    Game.stage = 1;
+    Game.stage = 0;
     Game.currentScreen = Game.screens[Game.activeScreen];
     Game.currentScreen.init(ctx, Game.stages[Game.stage]);
   }

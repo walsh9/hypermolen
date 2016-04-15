@@ -66,11 +66,7 @@ Game.screens.main = {
   },
   _drawSky: function(ctx, stage, molen) {
     ctx.fillStyle = stage.skyColor;
-    if (stage.terrain === "land") {
-      ctx.fillRect(0, 0, this.w, 35);
-    } else if (stage.terrain === "mirror" || stage.terrain === "space") {
-      ctx.fillRect(0, 0, this.w, this.h);
-    }
+    ctx.fillRect(0, 0, this.w, this.h);
   },
   _drawTower: function(ctx, stage, molen) {
     if (stage.terrain === "land") {
@@ -142,6 +138,8 @@ Game.screens.main = {
     var greenRight = this.center.y - 10;
 
     if (stage.terrain === "land") {
+      ctx.fillStyle = stage.landColor
+      ctx.fillRect(0, 35, 64, 29)
       ctx.beginPath();
       ctx.fillStyle = stage.greenColor;
       ctx.moveTo(greenLeft, 35);
