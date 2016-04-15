@@ -77,7 +77,6 @@ Game.objects.Molen = {
     return molen.arms.some(function(arm) {
       armStart = Math.mod(arm.start * CIRCLE + molen.angle, CIRCLE);
       armEnd =   Math.mod(arm.end   * CIRCLE + molen.angle, CIRCLE);
-      console.log(armStart, offset, armEnd)
       if (offset > armStart && offset < armEnd || 
         offset > armStart   && armEnd < armStart || 
         offset < armEnd     && armEnd < armStart) {

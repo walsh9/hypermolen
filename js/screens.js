@@ -61,10 +61,7 @@ Game.screens.main = {
 
     //draw balls
     this.balls.forEach(function(ball) {
-      ctx.beginPath();
-      ctx.fillStyle = ball.color;
-      ctx.arc(ball.pos.x, ball.pos.y, ball.radius, 0, CIRCLE);
-      ctx.fill();
+      ball.draw()
     });
   },
   _drawSky: function(ctx, stage, molen) {
@@ -126,16 +123,17 @@ Game.screens.main = {
 
       ctx.beginPath();
       ctx.fillStyle = "#000000";
-      ctx.arc(molen.pos.x, molen.pos.y + molen.armRadius, 2, CIRCLE, 0);
+      var targetDistance = molen.armRadius - 1
+      ctx.arc(molen.pos.x, molen.pos.y + targetDistance, 2.5, CIRCLE, 0);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(molen.pos.x, molen.pos.y - molen.armRadius, 2, CIRCLE, 0);
+      ctx.arc(molen.pos.x, molen.pos.y - targetDistance, 2.5, CIRCLE, 0);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(molen.pos.x + molen.armRadius, molen.pos.y, 2, CIRCLE, 0);
+      ctx.arc(molen.pos.x + targetDistance, molen.pos.y, 2.5, CIRCLE, 0);
       ctx.fill();
       ctx.beginPath();
-      ctx.arc(molen.pos.x - molen.armRadius, molen.pos.y, 2, CIRCLE, 0);
+      ctx.arc(molen.pos.x - targetDistance, molen.pos.y, 2.5, CIRCLE, 0);
       ctx.fill();
     }
   },
@@ -202,11 +200,9 @@ Game.screens.main = {
 
       ctx.fillStyle = frameColor;
       ctx.fillRect(molen.heartRadius, 0, bladeLength, bladeHeight);
-      // ctx.fillRect(molen.heartRadius, 0, molen.armRadius - 5, (arm.end - arm.start) * 130);
 
       ctx.fillStyle = sailColor;
       ctx.fillRect(molen.heartRadius + frameThickness, frameThickness, bladeLength - frameThickness * 2, bladeHeight - frameThickness * 2);
-      //ctx.fillRect(molen.heartRadius + 1, 0 + 1, molen.armRadius - 5 -2, (arm.end - arm.start) * 130 - 2);
 
       ctx.fillStyle = frameColor;
       ctx.fillRect(0, 0, molen.heartRadius + bladeLength, armThickness);

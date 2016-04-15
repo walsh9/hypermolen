@@ -60,6 +60,12 @@ Game.objects.Ball = {
         this.destroy();
       }
   },
+  draw: function() {
+    this.ctx.beginPath();
+    this.ctx.fillStyle = this.color;
+    this.ctx.arc(this.pos.x, this.pos.y, this.radius, 0, CIRCLE);
+    this.ctx.fill();
+  },
   destroy: function() {
       delete this.collection[this.index];
   },
