@@ -33,19 +33,19 @@ Game.objects.Molen = {
     this.heartRadius = 4;
     switch (this.targetCount) {
     case 1: 
-      this.targets = [{x: 32, y: 33}];
+      this.targets = [{x: 32, y: 33, angle: CIRCLE * 0.25}];
       break;
     case 2:
       this.targets = 
-        [{x: this.pos.x, y: this.pos.y + this.armRadius}, 
-         {x: this.pos.x, y: this.pos.y - this.armRadius}];
+        [{x: this.pos.x, y: this.pos.y + this.armRadius, angle: CIRCLE * 0.25}, 
+         {x: this.pos.x, y: this.pos.y - this.armRadius, angle: CIRCLE * 0.75}];
       break;
     case 4:
       this.targets = 
-        [{x: this.pos.x, y: this.pos.y + this.armRadius}, 
-         {x: this.pos.x, y: this.pos.y - this.armRadius},
-         {x: this.pos.x + this.armRadius, y: this.pos.y},
-         {x: this.pos.x - this.armRadius, y: this.pos.y}];
+        [{x: this.pos.x, y: this.pos.y + this.armRadius, angle: CIRCLE * 0.25}, 
+         {x: this.pos.x, y: this.pos.y - this.armRadius, angle: CIRCLE * 0.75},
+         {x: this.pos.x + this.armRadius, y: this.pos.y, angle: CIRCLE * 1.00},
+         {x: this.pos.x - this.armRadius, y: this.pos.y, angle: CIRCLE * 0.50}];
       break;
     }
     return this;
@@ -70,16 +70,17 @@ Game.objects.Molen = {
     }
     return arms;
   },
-  checkBlocking: function(offset) {
+  checkBlocking: function(target) {
     var armStart, armEnd;
     var molen = this;
-    offset = offset || CIRCLE * 0.25;
+    offset = target.angle;
     return molen.arms.some(function(arm) {
       armStart = Math.mod(arm.start * CIRCLE + molen.angle, CIRCLE);
       armEnd =   Math.mod(arm.end   * CIRCLE + molen.angle, CIRCLE);
+      console.log(armStart, offset, armEnd)
       if (offset > armStart && offset < armEnd || 
-        offset > armStart && armEnd < armStart || 
-        offset < armStart && armEnd < armStart) {
+        offset > armStart   && armEnd < armStart || 
+        offset < armEnd     && armEnd < armStart) {
         return true;
       }
     });

@@ -43,4 +43,17 @@ Game.stages = [{
     terrain: "space",
     skyColor: "#000033",
     bgEffect: "starfield",
+  }, {
+    molen: {
+      armCount: 3,
+      armWidth: 0.11,
+      towerColor: "#bbbbbb",
+      capColor: "#999999",
+      wheelColor: "#ffffff",
+      armColor: "#dddddd",
+      frameColor: "#dddddd",
+      sailColor: "#0000ff"
+    },
+    terrain: "space",
+    skyColor: "#000033",
   }];

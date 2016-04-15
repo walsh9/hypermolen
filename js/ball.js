@@ -45,7 +45,7 @@ Game.objects.Ball = {
       var speed = this.speed * timePassed;
       this.pos.move(this.direction, speed);
       if (!this.bounced && this.pos.isNear(this.target)) {
-        if (this.stage.molen.checkBlocking()) {
+        if (this.stage.molen.checkBlocking(this.target)) {
           this.bounced = true;
           if (this.tendency === "horizontal") {
             this.direction.x = -(this.direction.x);
